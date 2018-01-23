@@ -1,5 +1,63 @@
 #include "../../includes/ft_21sh.h"
 
+char 	*ft_cmd_lexer(char *characters, bool *cmd, bool *dir)
+{
+	char 	*tmp;
+	char 	*tmp2;
+
+	tmp = NULL;
+	tmp2 = NULL;
+	*cmd = true;
+	*dir = false;
+	ft_putendl("Command Starting");
+	tmp = ft_search_alnum_end(characters);
+	if (tmp)
+		tmp2 = ft_strsub(characters, 0, tmp - characters);
+	if (tmp && !(ft_check_file_ex(tmp2, 'e')))
+	{
+		ft_strdel(&tmp2);
+		return (NULL);
+	}
+	ft_strdel(&tmp2);
+	tmp = ft_search_alnum_end(characters);
+	while (*tmp && (*tmp == ' ' || *tmp == '\t'))
+		tmp++;
+	if (*tmp && *tmp != ' ' && *tmp != '\t' && *tmp != '|' && *tmp != '<' && *tmp != '>' && *tmp != '/')
+	{
+		ft_putendl("Error: syntax error while processing command");
+		return (NULL);
+	}
+	return (tmp);
+}
+
+char 	*ft_pipe_lexer(char *characters, bool *cmd, bool *dir)
+{
+	*cmd = true;
+	*dir = false;
+	ft_putendl("Pipe and checking");
+	characters++;
+	while (*characters == ' ' || *characters == '\t')
+		characters++;
+	if (!*characters || (!ft_isalnum(*characters) && *characters != ' ' && *characters != '/'))
+	{
+		ft_putendl("Error: syntax error");
+		return (NULL);
+	}
+	return (characters);
+}
+
+/*char 	*ft_sepa_lexer(char *characters, bool *cmd, bool *dir)
+{
+	*cmd = true;
+	*dir = false;
+	ft_putendl("Command separator");
+	if (*characters && !ft_isalnum(*characters))
+	{
+		ft_putendl("Error: syntax error");
+		return (NULL);
+	}
+}*/
+
 int		ft_token_expr(char *characters)
 {
 	bool	cmd;
@@ -8,32 +66,19 @@ int		ft_token_expr(char *characters)
 
 	cmd = true;
 	dir = false;
+	while (*characters == ' ' || *characters == '\t')
+		characters++;
 	while (*characters)
 	{
-		if (cmd && ft_isalnum(*characters))
+		if ((cmd && ft_isalnum(*characters)) || ft_strchr(characters, '/'))
 		{
-			cmd = false;
-			dir = true;
-			ft_putendl("Command Starting");
-			characters = ft_search_alnum_end(characters);
-			tmp = characters;
-			if (*tmp && *tmp != ' ' && *tmp != '\t' && *tmp != '|' && *tmp != '<' && *tmp != '>')
-			{
-				ft_putendl("Error: syntax error");
-				exit(0);
-			}
+			if (!(characters = ft_cmd_lexer(characters, &cmd, &dir)))
+				return (0);
 		}
 		else if (*characters == '|')
 		{
-			ft_putendl("Pipe and checking");
-			cmd = true;
-			dir = false;
-			characters++;
-			if (*characters && !ft_isalnum(*characters) && *characters != ' ')
-			{
-				ft_putendl("Error: syntax error");
-				exit(0);
-			}
+			if (!(characters = ft_pipe_lexer(characters, &cmd, &dir)))
+				return (0);
 		}
 		else if (*characters == ';')
 		{

@@ -28,6 +28,7 @@ static int	ft_executable(char *tmp, char **paths, char *dir_ex)
 		}
 		ft_strdel(&dir_ex);
 		ft_2dfree((void **)p_paths);	
+		return (0);
 }
 
 static int	ft_folder_file(char *ex_or_file, char *dir_ex)
@@ -65,8 +66,10 @@ int			ft_check_file_ex(char *ex_or_file, char type)
 	else if (type == 'e')
 	{
 		dir_ex = ft_strjoin("/", ex_or_file);
-		if (ft_executable(tmp, paths, dir_ex))
-			return (1);	
+		if (!ft_strchr(ex_or_file, '/') && ft_executable(tmp, paths, dir_ex))
+			return (1);
+		else if (ft_strchr(ex_or_file, '/') && !access(ex_or_file, F_OK | R_OK))
+			return (1);
 		ft_putendl("Command not found / permission denied");
 	}
 	return (0);
