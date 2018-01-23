@@ -22,7 +22,7 @@ char 	*ft_cmd_lexer(char *characters, bool *cmd, bool *dir)
 	tmp = ft_search_alnum_end(characters);
 	while (*tmp && (*tmp == ' ' || *tmp == '\t'))
 		tmp++;
-	if (*tmp && *tmp != ' ' && *tmp != '\t' && *tmp != '|' && *tmp != '<' && *tmp != '>' && *tmp != '/')
+	if (*tmp && *tmp != ' ' && *tmp != '\t' && *tmp != '|' && *tmp != '<' && *tmp != '>' && *tmp != '/' && !ft_isalnum(*tmp))
 	{
 		ft_putendl("Error: syntax error while processing command");
 		return (NULL);
@@ -46,17 +46,20 @@ char 	*ft_pipe_lexer(char *characters, bool *cmd, bool *dir)
 	return (characters);
 }
 
-/*char 	*ft_sepa_lexer(char *characters, bool *cmd, bool *dir)
+char 	*ft_sepa_lexer(char *characters, bool *cmd, bool *dir)
 {
 	*cmd = true;
 	*dir = false;
 	ft_putendl("Command separator");
+	while (*characters && (*characters == ' ' || *characters == '\t'))
+		characters++;
 	if (*characters && !ft_isalnum(*characters))
 	{
 		ft_putendl("Error: syntax error");
 		return (NULL);
 	}
-}*/
+	return (characters);
+}
 
 int		ft_token_expr(char *characters)
 {
@@ -70,7 +73,7 @@ int		ft_token_expr(char *characters)
 		characters++;
 	while (*characters)
 	{
-		if ((cmd && ft_isalnum(*characters)) || ft_strchr(characters, '/'))
+		if ((*characters && cmd && ft_isalnum(*characters)) || ft_strchr(characters, '/'))
 		{
 			if (!(characters = ft_cmd_lexer(characters, &cmd, &dir)))
 				return (0);
