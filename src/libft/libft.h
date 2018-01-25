@@ -39,6 +39,7 @@ int					ft_isdigit(int c);
 int					ft_isprint(int c);
 char				*ft_itoa(int n);
 void				ft_2dfree(void **data);
+char				*ft_skip_spaces(char *str);
 char				*ft_search_alnum_end(char *str);
 void				*ft_memalloc(size_t size);
 void				*ft_memccpy(void *dst, void *src, int c, size_t n);
